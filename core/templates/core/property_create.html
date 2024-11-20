@@ -1,0 +1,15 @@
+{%extends 'base.html' %}
+
+{% block content %}
+    <div class="center-container">
+    <h1>Добавить объект недвижимости</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Добавить</button>
+    </form>
+
+    <p><a href="{% url 'core:property_list' %}">Вернуться к списку недвижимости</a></p>
+    </div>
+{% endblock %}

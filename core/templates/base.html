@@ -12,12 +12,17 @@
     <header>
         <nav>
             <ul>
-                <li><a href="{% url 'core:home' %}">Главная</a></li>
+                <li><a href="{% url 'core:home' %}" class="header-button">Главная</a></li>
+                <li><a href="{% url 'core:property_list' %}" class="header-button">Каталог</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'core:logout' %}">Выйти</a></li>
+                    <form action="{% url 'core:logout' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button class="header-button" type="submit" >Выйти</button>
+                    </form>
+                    <li><a href="{% url 'core:my_viewing_requests' %}" class="header-button">Запросы</a></li>
                 {% else %}
-                    <li><a href="{% url 'core:register' %}">Зарегистрироваться</a></li>
-                    <li><a href="{% url 'core:login' %}">Войти</a></li>
+                    <li><a href="{% url 'core:register' %}" class="header-button">Зарегистрироваться</a></li>
+                    <li><a href="{% url 'core:login' %}" class="header-button">Войти</a></li>
                 {% endif %}
             </ul>
         </nav>

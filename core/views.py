@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
-from .forms import UserRegisterForm
+from .forms import UserRegisterForm, PropertyCreateForm, ViewingRequestForm
+from .models import Property, ViewingRequest
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     return render(request, 'core/home.html')
@@ -20,8 +21,44 @@ def register(request):
         form = UserRegisterForm()
     return render(request, 'core/register.html', {'form': form})
 
-def custom_logout(request):
-    logout(request)
-    return redirect('/') 
 
+def property_list(request):
+    properties = Property.objects.all()
+    return render(request, 'core/property_list.html', {'properties': properties})
 
+@login_required
+def property_create(request):
+    if request.method == 'POST':
+        form = PropertyCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('core:property_list')  # Перенаправляем на список недвижимости
+    else:
+        form = PropertyCreateForm()
+    
+    return render(request, 'core/property_create.html', {'form': form})
+
+@login_required
+def viewing_request(request, property_id):
+    property_instance = Property.objects.get(id=property_id) 
+    
+    if request.method == 'POST':
+        form = ViewingRequestForm(request.POST)
+        if form.is_valid():
+            # Создаем новый запрос на просмотр
+            viewing_request = form.save(commit=False)
+            viewing_request.user = request.user
+            viewing_request.property = property_instance
+            viewing_request.status = 'pending'
+            viewing_request.save()
+            return redirect('core:property_list')  # Перенаправляем на список недвиж
+    else:
+        form = ViewingRequestForm()
+
+    return render(request, 'core/viewing_request.html', {'form': form, 'property': property_instance})
+
+@login_required
+def my_viewing_requests(request):
+    # Получаем все запросы текущего пользователя
+    requests = ViewingRequest.objects.filter(user=request.user)
+    return render(request, 'core/my_viewing_requests.html', {'requests': requests})
