@@ -13,6 +13,7 @@ urlpatterns = [
     path('properties/create/', views.property_create, name='property_create'),
     path('property/<int:property_id>/request/', views.viewing_request, name='viewing_request'),
     path('my_requests/', views.my_viewing_requests, name='my_viewing_requests'),
+    path('rental_agreement/<int:request_id>/', views.create_rental_agreement, name='create_rental_agreement'),
 
     
 ]

@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
-from .forms import UserRegisterForm, PropertyCreateForm, ViewingRequestForm
+from .forms import UserRegisterForm, PropertyCreateForm, ViewingRequestForm, RentalAgreementForm
 from .models import Property, ViewingRequest
 from django.contrib.auth.decorators import login_required
 
@@ -62,3 +62,21 @@ def my_viewing_requests(request):
     # Получаем все запросы текущего пользователя
     requests = ViewingRequest.objects.filter(user=request.user)
     return render(request, 'core/my_viewing_requests.html', {'requests': requests})
+
+@login_required
+def create_rental_agreement(request, request_id):
+    viewing_request = get_object_or_404(ViewingRequest, id=request_id, user=request.user)
+     # Обрабатываем форму для создания договора
+    if request.method == 'POST':
+        form = RentalAgreementForm(request.POST)
+        if form.is_valid():
+            rental_agreement = form.save(commit=False)
+            rental_agreement.viewing_request = viewing_request
+            rental_agreement.tenant = request.user
+            rental_agreement.save()
+            return redirect('core:my_viewing_requests') 
+
+    else:
+        form = RentalAgreementForm()
+
+    return render(request, 'core/create_rental_agreement.html', {'form': form, 'viewing_request': viewing_request})

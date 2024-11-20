@@ -2,13 +2,13 @@
 
 {% block content %}
 <div class="center-container">
-    <h1>Запрос на просмотр: {{ property.title }}</h1>
+    <h2>Создание договора аренды для {{ viewing_request.property.title }}</h2>
 
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Отправить запрос</button>
+        <button type="submit">Создать договор</button>
     </form>
-
 </div>
+
 {% endblock %}
