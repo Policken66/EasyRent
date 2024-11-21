@@ -15,6 +15,7 @@
                 <li><a href="{% url 'core:home' %}" class="header-button">Главная</a></li>
                 <li><a href="{% url 'core:property_list' %}" class="header-button">Каталог</a></li>
                 {% if user.is_authenticated %}
+                    <li><a href="{% url 'core:profile' %}" class="header-button">Профиль</a></li>
                     <form action="{% url 'core:logout' %}" method="post" style="display: inline;">
                         {% csrf_token %}
                         <button class="header-button" type="submit" >Выйти</button>

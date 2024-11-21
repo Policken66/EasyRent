@@ -25,6 +25,15 @@ class PropertyCreateForm(forms.ModelForm):
             'area': forms.NumberInput(attrs={'min': 0}),
         }
 
+        labels = {
+            'title': 'Название',
+            'description': 'Описание',
+            'area': 'Площадь',
+            'price': 'Цена',
+            'location': 'Адрес',
+            'status': 'Статус',
+        }
+
 class ViewingRequestForm(forms.ModelForm):
     class Meta:
         model = ViewingRequest
@@ -33,6 +42,11 @@ class ViewingRequestForm(forms.ModelForm):
     viewing_time = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}),
         label="Дата просмотра"
+    )
+
+    property = forms.ModelChoiceField(
+        queryset=Property.objects.all(),
+        label="Недвижимость",
     )
 
     # Для автозаполнения пользователя
@@ -48,6 +62,12 @@ class RentalAgreementForm(forms.ModelForm):
         model = RentalAgreement
         fields = ['viewing_request', 'start_date', 'end_date', 'rent_price']
 
+    viewing_request = forms.ModelChoiceField(
+        queryset=ViewingRequest.objects.all(),
+        label="Успешные просмотры"
+    )
+
+
     start_date = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}),
         label="Дата заезда"
@@ -57,6 +77,14 @@ class RentalAgreementForm(forms.ModelForm):
         widget=forms.DateInput(attrs={'type': 'date'}),
         label="Дата выезда"
     )
+
+    rent_price = forms.DecimalField(
+        label ="Стоимость аренды",
+    )
+
+    
+
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Пре-фильтрация только подтвержденных запросов

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="center-container">
+        <h2>Профиль пользователя</h2>
+        <p>Добро пожаловать, {{ user.username }}!</p>
+        <div class="profile-actions">
+            <a href="{% url 'core:my_viewing_requests' %}" class="body-button">Мои запросы</a>
+            <a href="{% url 'core:my_rental_agreements' %}" class="body-button">Мои договоры</a>
+        </div>
+    </div>
+{% endblock %}

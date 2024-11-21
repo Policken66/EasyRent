@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from .forms import UserRegisterForm, PropertyCreateForm, ViewingRequestForm, RentalAgreementForm
-from .models import Property, ViewingRequest
+from .models import Property, ViewingRequest, RentalAgreement
 from django.contrib.auth.decorators import login_required
 
 def home(request):
@@ -80,3 +80,12 @@ def create_rental_agreement(request, request_id):
         form = RentalAgreementForm()
 
     return render(request, 'core/create_rental_agreement.html', {'form': form, 'viewing_request': viewing_request})
+
+@login_required
+def profile(request):
+    return render(request, 'core/profile.html')
+
+@login_required
+def my_rental_agreements(request):
+    agreements = RentalAgreement.objects.filter(viewing_request__user=request.user)
+    return render(request, 'core/my_rental_agreements.html', {'agreements': agreements})

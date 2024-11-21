@@ -19,7 +19,7 @@
           <td>{{ request.status }}</td>
           <td>
             {% if request.status == 'confirmed' %}
-              <a href="{% url 'core:create_rental_agreement' request.id %}">Заключить договор</a>
+              <a href="{% url 'core:create_rental_agreement' request.id %}" class="body-button">Заключить договор</a>
             {% else %}
               Невозможно заключить договор
             {% endif %}
