@@ -23,7 +23,18 @@ def register(request):
 
 
 def property_list(request):
-    properties = Property.objects.all()
+    sort_by = request.GET.get('sort', 'price')  # Получаем параметр сортировки, по умолчанию 'price'
+
+    if sort_by == 'price':
+        properties = Property.objects.order_by('price')  # Сортировка по цене (по возрастанию)
+    elif sort_by == '-price':
+        properties = Property.objects.order_by('-price')  # Сортировка по цене (по убыванию)
+    elif sort_by == 'area':
+        properties = Property.objects.order_by('area')  # Сортировка по метражу (по возрастанию)
+    elif sort_by == '-area':
+        properties = Property.objects.order_by('-area')  # Сортировка по метражу (по убыванию)
+    else:
+        properties = Property.objects.all()  # Без сортировки
     return render(request, 'core/property_list.html', {'properties': properties})
 
 @login_required
@@ -31,11 +42,12 @@ def property_create(request):
     if request.method == 'POST':
         form = PropertyCreateForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('core:property_list')  # Перенаправляем на список недвижимости
+            property = form.save(commit=False)
+            property.realtor = request.user
+            property.save()
+            return redirect('core:realtor_properties')  # Перенаправляем на список недвижимости
     else:
         form = PropertyCreateForm()
-    
     return render(request, 'core/property_create.html', {'form': form})
 
 @login_required
@@ -49,6 +61,7 @@ def viewing_request(request, property_id):
             viewing_request = form.save(commit=False)
             viewing_request.user = request.user
             viewing_request.property = property_instance
+        
             viewing_request.status = 'pending'
             viewing_request.save()
             return redirect('core:property_list')  # Перенаправляем на список недвиж
@@ -89,3 +102,41 @@ def profile(request):
 def my_rental_agreements(request):
     agreements = RentalAgreement.objects.filter(viewing_request__user=request.user)
     return render(request, 'core/my_rental_agreements.html', {'agreements': agreements})
+
+@login_required
+def realtor_properties(request):
+    properties = Property.objects.filter(realtor=request.user)
+    return render(request, 'core/realtor_properties.html', {'properties': properties})
+
+@login_required
+def realtor_viewing_requests(request):
+    viewing_requests = ViewingRequest.objects.filter(realtor=request.user)
+    all_requests = ViewingRequest.objects.all()
+
+    return render(request, 'core/realtor_viewing_requests.html', {'viewing_requests': viewing_requests})
+
+@login_required
+def confirm_viewing_requests(request, viewing_request_id):
+
+    viewing_request = get_object_or_404(ViewingRequest, id=viewing_request_id)
+
+    # Меняем статус записи на "подтверждена"
+    if viewing_request.status == 'pending':
+        viewing_request.status = 'confirmed'
+        viewing_request.save()
+    
+    return render(request, 'core/profile.html')
+
+
+
+@login_required
+def cancel_viewing_requests(request, viewing_request_id):
+
+    viewing_request = get_object_or_404(ViewingRequest, id=viewing_request_id)
+
+    # Меняем статус записи на "подтверждена"
+    if viewing_request.status == 'confirmed':
+        viewing_request.status = 'pending'
+        viewing_request.save()
+    
+    return render(request, 'core/profile.html')

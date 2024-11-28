@@ -1,13 +1,15 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
+from django.core.mail import send_mail
 
 # Модель пользователя с ролями
 class User(AbstractUser):
 
     ROLE_CHOICES = [
         ('admin', 'Администратор'),
-        ('client', 'Клиент'),
+        ('realtor', 'Риелтор'),
+        ('client', 'Клиент'),   
     ]
 
     role = models.CharField(
@@ -16,6 +18,26 @@ class User(AbstractUser):
         default='client',
     )
 
+    def save(self, *args, **kwargs):
+        if self.is_superuser:
+            self.role = 'admin'
+        super().save(*args, **kwargs)
+
+    #Метод для отправки сообщения о подтверждении на просмотр
+    def send_confirmation_email(self, viewing_request):
+        subject = 'Подтверждение на просмотр'
+        message = (
+            f'Здравствствуйте, {self.username}!\n\n'
+            f"Ваш запрос на просмотр объекта недвижимости {viewing_request.property.title} был"
+            f"Дата просмотра: {viewing_request.viewing_time.strftime('%d-%m-%Y')}\n"
+            f"Местоположение: {viewing_request.property.location}\n\n"
+            f"Цена: {viewing_request.property.price} руб.\n\n"
+            f"С уважением,\nEasy Rent."
+        )
+        recipient = self.email
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [recipient])
+
+        
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"
 
@@ -32,6 +54,14 @@ class Property(models.Model):
     location = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=10, choices=PROPERTY_STATUS, default='available')
+    realtor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='properties',
+        limit_choices_to={'role': 'realtor'},
+        null=True,  # На случай, если нужно оставить недвижимость без риелтора
+        blank=True
+    )
     
     def __str__(self):
         return self.title
@@ -45,6 +75,7 @@ class ViewingRequest(models.Model):
 
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    realtor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='viewing_requests_as_realtor', verbose_name="Риелтор", null=True)
     request_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     viewing_time = models.DateField() # Время, когда клиент хочет посмотреть объект 
@@ -63,3 +94,4 @@ class RentalAgreement(models.Model):
 
     def __str__(self):
         return f"Договор аренды: {self.viewing_request.property.title} - {self.tenant.username}"
+    

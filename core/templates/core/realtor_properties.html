@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="center-container-property-list">
+        <h2>Мои объявления</h2>
+        {% if user.is_authenticated %}
+            <p><a href="{% url 'core:property_create' %}" class="body-button">Добавить</a></p>
+        {% endif %}
+    </div>
+
+    <div class="property-list">
+        {% for property in properties %}
+                <div class="property-card">
+                    <h3>{{ property.title }}</h3>
+                    <p>{{ property.description }}</p>
+                    <p><strong>Цена:</strong> {{ property.price }} руб.</p>
+                    <p><strong>Площадь:</strong> {{ property.area }} м²</p>
+                    <p><strong>Местоположение:</strong> {{ property.location }}</p>
+                    <p><strong>Статус:</strong> {{ property.get_status_display }}</p>
+                </div>
+        {% empty %}
+            <li>Нет объявлений</li>
+        {% endfor %}
+        </div>
+{% endblock %}

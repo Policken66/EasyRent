@@ -3,12 +3,17 @@
 {% block content %}
 <div class="center-container-property-list">
     <h1>Список недвижимости</h1>
-    {% if user.is_authenticated %}
-        <p><a href="{% url 'core:property_create' %}" class="body-button">Добавить</a></p>
-    {% else %}
-        <p><a href="{% url 'core:login' %}" class="body-button">Добавить</a></p>
-    {% endif %}
 </div>
+
+<form method="get" class="sort-form">
+    <label for="sort">Сортировать по:</label>
+    <select name="sort" id="sort" onchange="this.form.submit()">
+      <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>Цене ↓</option>
+      <option value="-price" {% if request.GET.sort == '-price' %}selected{% endif %}>Цене ↑</option>
+      <option value="area" {% if request.GET.sort == 'area' %}selected{% endif %}>Метражу ↓</option>
+      <option value="-area" {% if request.GET.sort == '-area' %}selected{% endif %}>Метражу ↑</option>
+    </select>
+</form>
 
 <div class="property-list">
     {% for property in properties %}

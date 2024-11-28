@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Мои запросы на просмотр</h2>
+  <table class="requests-table">
+    <thead>
+      <tr>
+        <th>Объект</th>
+        <th>Дата запроса</th>
+        <th>Статус</th>
+        <th>Действие</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for viewing_request in viewing_requests %}
+        <tr>
+          <td>{{ viewing_request.property.title }}</td>
+          <td>{{ viewing_request.viewing_time }}</td>
+          <td>{{ viewing_request.get_status_display  }}</td>
+          <td>
+            {% if viewing_request.status == 'pending' %}
+                <form method="post" action="{% url 'core:confirm_viewing_requests' viewing_request.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class='body-button'>Подтвердить запись</button>
+                </form>
+            {% else %}
+                <form method="post" action="{% url 'core:cancel_viewing_requests' viewing_request.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class='body-button'>Отменить запись</button>
+                </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4">У вас нет запросов на просмотр.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
