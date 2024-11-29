@@ -5,7 +5,7 @@
     <h1>Список недвижимости</h1>
 </div>
 
-<form method="get" class="sort-form">
+<form method="get" class="form-sort-style">
     <label for="sort">Сортировать по:</label>
     <select name="sort" id="sort" onchange="this.form.submit()">
       <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>Цене ↓</option>

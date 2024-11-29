@@ -9,6 +9,7 @@
         <th>Дата запроса</th>
         <th>Статус</th>
         <th>Действие</th>
+        <th>Договор</th>
       </tr>
     </thead>
     <tbody>
@@ -28,6 +29,16 @@
                     {% csrf_token %}
                     <button type="submit" class='body-button'>Отменить запись</button>
                 </form>
+            {% endif %}
+          </td>
+          <td>  
+            {% if viewing_request.status != 'pending' %}
+              <form method="post" action="{% url 'core:create_rental_agreement' viewing_request.id %}">
+                {% csrf_token %}
+                <button type="submit" class='body-button'>Создать договор</button>
+              </form>
+            {% else %}
+              Необходимо подтверждение
             {% endif %}
           </td>
         </tr>

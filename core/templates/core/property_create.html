@@ -4,7 +4,7 @@
     <div class="center-container">
     <h1>Добавить объект недвижимости</h1>
     
-    <form method="post">
+    <form method="post" class="form-style">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Добавить</button>

@@ -8,7 +8,6 @@
         <th>Объект</th>
         <th>Дата запроса</th>
         <th>Статус</th>
-        <th>Договор</th>
       </tr>
     </thead>
     <tbody>
@@ -17,17 +16,10 @@
           <td>{{ request.property.title }}</td>
           <td>{{ request.viewing_time }}</td>
           <td>{{ request.status }}</td>
-          <td>
-            {% if request.status == 'confirmed' %}
-              <a href="{% url 'core:create_rental_agreement' request.id %}" class="body-button">Заключить договор</a>
-            {% else %}
-              Невозможно заключить договор
-            {% endif %}
-          </td>
         </tr>
       {% empty %}
         <tr>
-          <td colspan="4">У вас нет запросов на просмотр.</td>
+          <td colspan="3">У вас нет запросов на просмотр.</td>
         </tr>
       {% endfor %}
     </tbody>

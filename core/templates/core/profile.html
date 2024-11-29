@@ -23,7 +23,7 @@
             {% if user.role == 'realtor'%}
                 <a href="{% url 'core:realtor_properties' %}" class="body-button">Мои объявления </a>
                 <a href="{% url 'core:realtor_viewing_requests' %}" class="body-button">Запросы на подтверждение</a>
-                <a href="{% url 'core:my_rental_agreements' %}" class="body-button">Договоры на согласование</a>
+                <a href="{% url 'core:realtor_rental_agreements' %}" class="body-button">Договоры на согласование</a>
             {% endif %}
         </div>
     </div>

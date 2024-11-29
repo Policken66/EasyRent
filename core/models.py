@@ -85,12 +85,21 @@ class ViewingRequest(models.Model):
     
 # Модель договора
 class RentalAgreement(models.Model):
+    STATUS_CHOICES = [
+        ('pending_sent', 'Ожидает отправления'),
+        ('sent', 'Отправлено'),
+        ('pending_confirmed', 'Ожидает подтверждения'),
+        ('confirmed', 'Подтверждено'),
+    ]
+
     viewing_request = models.OneToOneField(ViewingRequest, on_delete=models.CASCADE)
     tenant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tenant_agreements')
+    realtor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='realtor_agreements', verbose_name="Риелтор", null=True)
     start_date = models.DateField()
     end_date = models.DateField()
     rent_price = models.DecimalField(max_digits=10, decimal_places=2)
     signed_date = models.DateField(auto_now_add=True)
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='pending_sent')
 
     def __str__(self):
         return f"Договор аренды: {self.viewing_request.property.title} - {self.tenant.username}"

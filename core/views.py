@@ -3,6 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from .forms import UserRegisterForm, PropertyCreateForm, ViewingRequestForm, RentalAgreementForm
 from .models import Property, ViewingRequest, RentalAgreement
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 
 def home(request):
     return render(request, 'core/home.html')
@@ -78,21 +79,28 @@ def my_viewing_requests(request):
 
 @login_required
 def create_rental_agreement(request, request_id):
-    viewing_request = get_object_or_404(ViewingRequest, id=request_id, user=request.user)
-     # Обрабатываем форму для создания договора
+    viewing_request = get_object_or_404(ViewingRequest, id=request_id, realtor=request.user)
+    
+    # Проверяем, что запрос подтверждён
+    if viewing_request.status != 'confirmed':
+        return HttpResponseForbidden("Вы можете создать договор только для подтверждённых запросов.")
+
     if request.method == 'POST':
         form = RentalAgreementForm(request.POST)
         if form.is_valid():
             rental_agreement = form.save(commit=False)
             rental_agreement.viewing_request = viewing_request
-            rental_agreement.tenant = request.user
+            rental_agreement.realtor = request.user
+            rental_agreement.tenant = viewing_request.user
             rental_agreement.save()
-            return redirect('core:my_viewing_requests') 
-
+            return redirect('core:realtor_rental_agreements') 
     else:
         form = RentalAgreementForm()
 
-    return render(request, 'core/create_rental_agreement.html', {'form': form, 'viewing_request': viewing_request})
+    return render(request, 'core/create_rental_agreement.html', {
+        'form': form, 
+        'viewing_request': viewing_request
+    })
 
 @login_required
 def profile(request):
@@ -111,8 +119,6 @@ def realtor_properties(request):
 @login_required
 def realtor_viewing_requests(request):
     viewing_requests = ViewingRequest.objects.filter(realtor=request.user)
-    all_requests = ViewingRequest.objects.all()
-
     return render(request, 'core/realtor_viewing_requests.html', {'viewing_requests': viewing_requests})
 
 @login_required
@@ -125,7 +131,7 @@ def confirm_viewing_requests(request, viewing_request_id):
         viewing_request.status = 'confirmed'
         viewing_request.save()
     
-    return render(request, 'core/profile.html')
+    return redirect('core:realtor_viewing_requests')
 
 
 
@@ -139,4 +145,9 @@ def cancel_viewing_requests(request, viewing_request_id):
         viewing_request.status = 'pending'
         viewing_request.save()
     
-    return render(request, 'core/profile.html')
+    return redirect('core:realtor_viewing_requests')
+
+@login_required
+def realtor_rental_agreements(request):
+    agreements = RentalAgreement.objects.filter(realtor=request.user)
+    return render(request, 'core/realtor_rental_agreements.html', {'agreements': agreements})

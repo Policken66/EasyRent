@@ -4,7 +4,7 @@
 <div class="center-container">
     <h2>Создание договора аренды для {{ viewing_request.property.title }}</h2>
 
-    <form method="post">
+    <form method="post" class = "form-style">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Создать договор</button>
