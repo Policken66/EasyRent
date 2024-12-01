@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Мои запросы на просмотр</h2>
+  <div class="center-container-property-list">
+    <h2 class = "custom-h2">Мои запросы на просмотр</h2>
+  </div>
   <table class="requests-table">
     <thead>
       <tr>
@@ -44,9 +46,10 @@
         </tr>
       {% empty %}
         <tr>
-          <td colspan="4">У вас нет запросов на просмотр.</td>
+          <td colspan="5">У вас нет запросов на просмотр.</td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
+  <div class="center-container"></div>
 {% endblock %}

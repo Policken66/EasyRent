@@ -2,12 +2,12 @@
 
 {% block content %}
     <div class="center-container">
-    <h1>Добавить объект недвижимости</h1>
-    
-    <form method="post" class="form-style">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Добавить</button>
-    </form>
+        <h2 class="custom-h2">Добавить объект недвижимости</h2>
+        
+        <form method="post" class="form-style">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Добавить</button>
+        </form>
     </div>
 {% endblock %}

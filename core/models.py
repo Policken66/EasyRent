@@ -18,6 +18,15 @@ class User(AbstractUser):
         default='client',
     )
 
+    def get_icon(self):
+        # Если роль пользователя 'admin', то возвращаем иконку admin.png
+        if self.role == 'admin':
+            return f"Icons/15.png"
+        else:
+            # Для всех остальных пользователей выбираем иконку по остаточному значению от деления на 20
+            icon_number = self.id % 16  # Получаем остаток от деления id на 20
+            return f"Icons/{icon_number + 1}.png"  # Иконка будет иметь номер от 1 до 20
+
     def save(self, *args, **kwargs):
         if self.is_superuser:
             self.role = 'admin'

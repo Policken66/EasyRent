@@ -1,9 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.mail import send_mail
 from django.contrib.auth import login, authenticate, logout
+from django.conf import settings
 from .forms import UserRegisterForm, PropertyCreateForm, ViewingRequestForm, RentalAgreementForm
 from .models import Property, ViewingRequest, RentalAgreement
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
+import logging
+
+logger = logging.getLogger(__name__)
+executor = ThreadPoolExecutor(max_workers=5)
 
 def home(request):
     return render(request, 'core/home.html')
@@ -74,8 +83,8 @@ def viewing_request(request, property_id):
 @login_required
 def my_viewing_requests(request):
     # Получаем все запросы текущего пользователя
-    requests = ViewingRequest.objects.filter(user=request.user)
-    return render(request, 'core/my_viewing_requests.html', {'requests': requests})
+    viewing_requests = ViewingRequest.objects.filter(user=request.user)
+    return render(request, 'core/my_viewing_requests.html', {'viewing_requests': viewing_requests})
 
 @login_required
 def create_rental_agreement(request, request_id):
@@ -108,8 +117,19 @@ def profile(request):
 
 @login_required
 def my_rental_agreements(request):
-    agreements = RentalAgreement.objects.filter(viewing_request__user=request.user)
+    agreements = RentalAgreement.objects.filter(viewing_request__user=request.user).exclude(status='pending_sent')
     return render(request, 'core/my_rental_agreements.html', {'agreements': agreements})
+
+@login_required
+def confirm_rental_agreements(request, agreement_id):
+    
+    agreement = get_object_or_404(RentalAgreement, id=agreement_id)
+
+    if agreement.status == 'sent':
+        agreement.status = 'pending_confirmed'
+        agreement.save()
+    return redirect('core:my_rental_agreements')
+
 
 @login_required
 def realtor_properties(request):
@@ -130,10 +150,18 @@ def confirm_viewing_requests(request, viewing_request_id):
     if viewing_request.status == 'pending':
         viewing_request.status = 'confirmed'
         viewing_request.save()
-    
+
+    subject='Подтверждение запроса на просмотр'  # Тема письма
+    message=f'Здравствуйте, {viewing_request.user.username} # ваш запрос на просмотр недвижимости был подтвержден.',  # Тело письма
+    #recipient=[viewing_request.user.email]  # Получатель
+    recipient=['komlev.artem.02@mail.ru']  # Получатель
+    #send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [recipient])
+    #send_mail('Django mail', 'This e-mail was sent with Django.', settings.DEFAULT_FROM_EMAIL, ['komlev.artem.02@mail.ru'], fail_silently=False)
+    #send_async_email(subject, message, recipient) # Ассинхронная функция для отправки email
+     # Запускаем отправку письма в отдельном потоке
+    threading.Thread(target=send_async_email, args=(subject, message, recipient)).start()
+
     return redirect('core:realtor_viewing_requests')
-
-
 
 @login_required
 def cancel_viewing_requests(request, viewing_request_id):
@@ -151,3 +179,47 @@ def cancel_viewing_requests(request, viewing_request_id):
 def realtor_rental_agreements(request):
     agreements = RentalAgreement.objects.filter(realtor=request.user)
     return render(request, 'core/realtor_rental_agreements.html', {'agreements': agreements})
+
+@login_required
+def realtor_sent_agreements(request, agreement_id):
+    agreement = get_object_or_404(RentalAgreement, id=agreement_id)
+
+    if agreement.status == 'pending_sent':
+        agreement.status = 'sent'
+        agreement.save()
+    
+    return redirect('core:realtor_rental_agreements')
+
+@login_required
+def realtor_cancel_sent_agreements(request, agreement_id):
+    agreement = get_object_or_404(RentalAgreement, id=agreement_id)
+
+    if agreement.status == 'sent' or agreement.status == 'confirmed':
+        agreement.status = 'pending_sent'
+        agreement.save()
+    
+    return redirect('core:realtor_rental_agreements')
+
+@login_required
+def realtor_confirm_rental_agreements(request, agreement_id):
+    agreement = get_object_or_404(RentalAgreement, id=agreement_id)
+
+    if agreement.status == 'pending_confirmed':
+        agreement.status = 'confirmed'
+        agreement.save()
+
+    return redirect('core:realtor_rental_agreements')
+
+
+def send_async_email(subject, message, recipient_email):
+    try:
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,  # Email отправителя (берётся из настроек)
+            [recipient_email],           # Список получателей
+            fail_silently=False          # Если ошибка, то выбрасывать исключение
+        )
+        print(f"Email отправлен: {recipient_email}")
+    except Exception as e:
+        print(f"Ошибка при отправке email: {e}")

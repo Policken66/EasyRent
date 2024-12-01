@@ -1,17 +1,21 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
     <div class="center-container">
         {% if user.role == 'client'%}
-            <h2>Профиль клиента</h2>
+            <h2 class="custom-h2">Профиль клиента</h2>
         {% endif %}
         {% if user.role == 'admin'%}
-            <h2>Профиль администратора</h2>
+            <h2 class="custom-h2">Профиль администратора</h2>
         {% endif %}
         {% if user.role == 'realtor'%}
-            <h2>Профиль риелтора</h2>
+            <h2 class="custom-h2">Профиль риелтора</h2>
         {% endif %}
-        <p>Добро пожаловать, {{ user.username }}!</p>
+        <div class="profile-icon">
+            <img src="{% static user.get_icon %}" alt="User Icon">
+        </div>
+        <p class="custom-h2">{{ user.username }}!</p>
         <div class="profile-actions">
             {% if user.role == 'client'%}
                 <a href="{% url 'core:my_viewing_requests' %}" class="body-button">Мои запросы</a>

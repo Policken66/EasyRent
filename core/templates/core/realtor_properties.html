@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="center-container-property-list">
-        <h2>Мои объявления</h2>
+        <h2 class="custom-h2">Мои объявления</h2>
         {% if user.is_authenticated %}
             <p><a href="{% url 'core:property_create' %}" class="body-button">Добавить</a></p>
         {% endif %}
@@ -21,5 +21,7 @@
         {% empty %}
             <li>Нет объявлений</li>
         {% endfor %}
-        </div>
+    </div>
+
+    <div class="center-container-2"> </div>
 {% endblock %}

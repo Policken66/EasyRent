@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="center-container">
-    <h2>Создание договора аренды для {{ viewing_request.property.title }}</h2>
+    <h2 class="custom-h2">Создание договора аренды для {{ viewing_request.property.title }}</h2>
 
     <form method="post" class = "form-style">
         {% csrf_token %}

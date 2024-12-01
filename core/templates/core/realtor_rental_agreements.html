@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Мои договоры аренды</h2>
+  <div class="center-container-property-list">
+    <h2 class = "custom-h2">Мои договоры аренды</h2>
+  </div>
   <table class="requests-table">
     <thead>
       <tr>
@@ -27,22 +29,22 @@
           <td>{{ agreement.get_status_display }}</td>
           <td>
             {% if agreement.status == 'pending_sent' %}
-                <form method="post" action="{% url 'core:confirm_viewing_requests' agreement.id %}">
+                <form method="post" action="{% url 'core:realtor_sent_agreements' agreement.id %}">
                     {% csrf_token %}
                     <button type="submit" class='body-button'>Отправить</button>
                 </form>
             {% elif agreement.status == 'sent' %}
-                <form method="post" action="{% url 'core:cancel_viewing_requests' agreement.id %}">
+                <form method="post" action="{% url 'core:realtor_cancel_sent_agreements' agreement.id %}">
                     {% csrf_token %}
                     <button type="submit" class='body-button'>Отменить отправку</button>
                 </form>
             {% elif agreement.status == 'pending_confirmed' %}
-                <form method="post" action="{% url 'core:cancel_viewing_requests' agreement.id %}">
+                <form method="post" action="{% url 'core:realtor_confirm_rental_agreements' agreement.id %}">
                     {% csrf_token %}
                     <button type="submit" class='body-button'>Подтвердить</button>
                 </form>   
             {% elif agreement.status == 'confirmed' %}
-              <form method="post" action="{% url 'core:cancel_viewing_requests' agreement.id %}">
+              <form method="post" action="{% url 'core:realtor_cancel_sent_agreements' agreement.id %}">
                   {% csrf_token %}
                   <button type="submit" class='body-button'>Отменить подтверждение</button>
               </form>
@@ -56,4 +58,5 @@
       {% endfor %}
     </tbody>
   </table>
+  <div class="center-container"></div>
 {% endblock %}

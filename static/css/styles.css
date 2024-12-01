@@ -1,12 +1,17 @@
 body {
+    background-image: url('../images/building_composition_2.png');
+    background-size: cover; /* Изображение будет покрывать весь экран */
+    background-position: center; /* Центрируем изображение */
+    background-repeat: no-repeat; /* Отключаем повторение изображения */
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+
 }
 
 header {
-    background-color: #333;
+    background-color: #111;
     color: #fff;
     padding: 1rem;
     display: flex;
@@ -21,9 +26,35 @@ header {
     align-items: center;      /* Центрируем по горизонтали */
     height: 80vh;            /* Задаем высоту контейнера равной высоте окна */
 }
+.center-container-2 {
+    display: flex;            /* Используем Flexbox */
+    flex-direction: column;   /* Элементы выстраиваются вертикально */
+    justify-content: center;  /* Центрируем по вертикали */
+    align-items: center;      /* Центрируем по горизонтали */
+    height: 40vh;            /* Задаем высоту контейнера равной высоте окна */
+}
+
+.center-container-wrapper {
+    background-color: black; /* Черный фон */
+    padding: 20px;            /* Отступы вокруг контейнера */
+    border-radius: 15px;      /* Сглаженные углы */
+    display: inline-block;    /* Контейнер занимает только нужную ширину */
+}
+
+.home-text {
+    display: flex;            /* Используем Flexbox */
+    flex-direction: column;   /* Элементы выстраиваются вертикально */
+    align-items: center;      /* Центрируем по горизонтали */
+    height: 80vh;            /* Задаем высоту контейнера равной высоте окна */
+    color: white; /* Задаем цвет текста белым */
+}
 
 .custom-h2 {
     margin-bottom: 20px;      /* Добавляем отступ под заголовком */
+    padding: 20px;            /* Отступы вокруг контейнера */
+    border-radius: 15px;      /* Сглаженные углы */
+    background-color: white; /* Черный фон */
+    color: black;
 }
 
 nav ul {
@@ -44,7 +75,7 @@ nav ul li a {
 footer {
     text-align: center;
     padding: 1rem;
-    background-color: #333;
+    background-color: #111;
     color: #fff;
 }
 
@@ -145,8 +176,10 @@ input[type="submit"]:hover {
 }
 
 .center-container-property-list {
-    text-align: center;
-    margin-bottom: 20px;
+    display: flex;            /* Используем Flexbox */
+    flex-direction: column;   /* Элементы выстраиваются вертикально */
+    justify-content: center;  /* Центрируем по вертикали */
+    align-items: center;      /* Центрируем по горизонтали */
 }
 
 /* Стилизация списка объектов недвижимости */
@@ -188,6 +221,7 @@ input[type="submit"]:hover {
     width: 100%; /* растягиваем на всю ширину */
     border-collapse: collapse; /* убираем двойные границы */
     margin-top: 20px; /* отступ сверху */
+    background-color: #f4f4f4; /* светлый фон для заголовков */
   }
   
   .requests-table th, .requests-table td {
@@ -231,3 +265,10 @@ input[type="submit"]:hover {
   .sort-options a:hover {
     background-color: #f0f0f0;
   }
+
+  .profile-icon img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+}

@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Мои запросы на просмотр</h2>
+  <div class="center-container-property-list">
+    <h2 class = "custom-h2">Мои запросы на просмотр</h2>
+  </div>
+  
   <table class="requests-table">
     <thead>
       <tr>
@@ -11,11 +14,11 @@
       </tr>
     </thead>
     <tbody>
-      {% for request in requests %}
+      {% for viewing_request in viewing_requests %}
         <tr>
-          <td>{{ request.property.title }}</td>
-          <td>{{ request.viewing_time }}</td>
-          <td>{{ request.status }}</td>
+          <td>{{ viewing_request.property.title }}</td>
+          <td>{{ viewing_request.viewing_time }}</td>
+          <td>{{ viewing_request.get_status_display }}</td>
         </tr>
       {% empty %}
         <tr>
@@ -24,4 +27,5 @@
       {% endfor %}
     </tbody>
   </table>
+  <div class="center-container"></div>
 {% endblock %}
