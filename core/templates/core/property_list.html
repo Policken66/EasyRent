@@ -26,7 +26,9 @@
             <p><strong>Статус:</strong> {{ property.get_status_display }}</p>
 
             {% if user.is_authenticated %}
-                <a href="{% url 'core:viewing_request' property.id %}" class="body-button">Запрос на просмотр</a>
+                {% if user.role == 'client'%}
+                    <a href="{% url 'core:viewing_request' property.id %}" class="body-button">Запрос на просмотр</a>
+                {% endif %}
             {% else %}
                 <a href="{% url 'core:login' %}" class="body-button">Запрос на просмотр</a>
             {% endif %}
